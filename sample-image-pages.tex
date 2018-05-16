@@ -1,0 +1,91 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+
+\begin{document}
+\title{Computer Vision course at the
+  University of Helsinki in May 2018 -- image example}
+
+\author{Jorma Laaksonen}
+\maketitle
+
+\newpage
+
+\section{Original, noisy and filtered images}
+
+\newcommand{\aaa}[3]{%
+  \fbox{\includegraphics[height=30mm,draft]{#1}} \quad
+  \fbox{\includegraphics[height=30mm,draft]{#2}} \quad
+  \fbox{\includegraphics[height=30mm,draft]{#3}} \par}
+
+\newcommand{\bbb}[3]{%
+  \medskip\noindent\aaa{#1}{#1-#2}{#1-#3}}
+
+\setlength{\fboxsep}{0pt}%
+
+pattern low pass
+
+\bbb{p}{l3}{l5}
+\bbb{p-ga1}{l3}{l5}
+\bbb{p-ga2}{l3}{l5}
+\bbb{p-sp1}{l3}{l5}
+\bbb{p-sp2}{l3}{l5}
+
+\pagebreak
+
+messi low pass
+
+\bbb{m}{l3}{l5}
+\bbb{m-ga1}{l3}{l5}
+\bbb{m-ga2}{l3}{l5}
+\bbb{m-sp1}{l3}{l5}
+\bbb{m-sp2}{l3}{l5}
+
+\pagebreak
+
+pattern median
+
+\bbb{p}{m3}{m5}
+\bbb{p-ga1}{m3}{m5}
+\bbb{p-ga2}{m3}{m5}
+\bbb{p-sp1}{m3}{m5}
+\bbb{p-sp2}{m3}{m5}
+
+\pagebreak
+
+messi median
+
+\bbb{m}{m3}{m5}
+\bbb{m-ga1}{m3}{m5}
+\bbb{m-ga2}{m3}{m5}
+\bbb{m-sp1}{m3}{m5}
+\bbb{m-sp2}{m3}{m5}
+
+\pagebreak
+
+pattern high pass
+
+\bbb{p}{h3}{h5}
+\bbb{p-ga1}{h3}{h5}
+\bbb{p-ga2}{h3}{h5}
+\bbb{p-sp1}{h3}{h5}
+\bbb{p-sp2}{h3}{h5}
+
+\pagebreak
+
+messi high pass
+
+\bbb{m}{h3}{h5}
+\bbb{m-ga1}{h3}{h5}
+\bbb{m-ga2}{h3}{h5}
+\bbb{m-sp1}{h3}{h5}
+\bbb{m-sp2}{h3}{h5}
+
+\pagebreak
+
+
+
+\end{document}
+%  LocalWords:  Jorma Laaksonen pdf py tex OpenCV libopencv dev jpg
+%  LocalWords:  highgui imgproc imgcodecs greyscale png opencv ing
+%  LocalWords:  texlive includegraphics Exactum Gür Ersalan
