@@ -2,7 +2,12 @@
 
 # https://docs.opencv.org/3.1.0/d6/d00/tutorial_py_root.html
 # https://github.com/abidrahmank/OpenCV2-Python-Tutorials
-
+import gzip
+import pickle
+from os import path
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+import numpy as np
 
 import cv2
 
@@ -119,9 +124,59 @@ def process_image(path, name):
     draw_skeleton(name, img_to_process, cv2.ximgproc.THINNING_GUOHALL, "GUOHALL")
 
 
+COEFFS = [2 ** i for i in range(0, 8)]
+
+
+def calculate_hist(img):
+    hist = dict()
+    height, width = img.shape
+    for i in range(1, height - 1):
+        for j in range(1, width - 1):
+            sum = int(img[i - 1, j - 1] * COEFFS[0] + img[i - 1, j] * COEFFS[1] + img[i - 1, j + 1] * COEFFS[2] + img[
+                i, j + 1] * COEFFS[3] + img[i + 1, j + 1] * COEFFS[4] + img[i + 1, j] * COEFFS[5] + img[i + 1, j - 1] * \
+                  COEFFS[6] + img[i, j - 1] * COEFFS[7])
+            if sum in hist:
+                hist[sum] += 1
+            else:
+                hist[sum] = 1
+    return hist
+
+
+def homework():
+    with gzip.open(path.join("mnist.pkl.gz"), "rb") as f:
+        train_set, valid_set, test_set = pickle.load(f)
+    train_x, train_y = train_set
+    valid_x, valid_y = valid_set
+    test_x, test_y = test_set
+
+    features = list()
+
+    for picture in train_x[0:1000]:
+        img = picture.reshape(28, 28)
+        print cv2.calcHist(cv2.cvtColor(img, cv2.COLOR_GRAY2RGB), channels=[0,1,2], maks=)
+        cv2.imshow("Pict", img)
+        cv2.waitKey(5) & 0xFF
+        features.append(calculate_hist(img))
+
+    test_features = list()
+
+    for picture in test_x[0:2000]:
+        img = picture.reshape(28, 28)
+        # cv2.imshow("Pict", img)
+        # cv2.waitKey(5) & 0xFF
+        test_features.append(calculate_hist(img))
+
+    print(features[0])
+
+    knn = cv2.ml.KNearest_create();
+    knn.train(features, cv2.ml.ROW_SAMPLE, range(0, 1000))
+    cv2.destroyAllWindows()
+
+
 if __name__ == "__main__":
     print("Reading the image")
     # bear_image = cv2.imread("junction.png", cv2.IMREAD_GRAYSCALE)
     # bear_image = cv2.imread("bear.pbm", cv2.IMREAD_GRAYSCALE)
-    for img, name in [("bear.pbm", "Bear"), ("car.bmp", "Car"), ("star.bmp", "Star")]:
-        process_image(img, name)
+    # for img, name in [("bear.pbm", "Bear"), ("car.bmp", "Car"), ("star.bmp", "Star")]:
+    #     process_image(img, name)
+    homework()
