@@ -5,7 +5,6 @@
 
 
 import cv2
-import numpy as np
 
 
 def get_initial_point(img, height, width):
@@ -107,17 +106,22 @@ def draw_skeleton(name, bear_image, thinngig_type, str_thinning_type):
 
 
 def process_image(path, name):
-    bear_image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-    bear_distance_transformed = cv2.distanceTransform(bear_image, distanceType=cv2.DIST_L2, maskSize=0)
+    img_to_process = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+    # img_canny = cv2.Canny(img_to_process, 10, 100)
+    # cv2.imshow("Test", img_canny)
+    ret, binary_img = cv2.threshold(img_to_process, 100, 255, cv2.THRESH_BINARY)
+    bear_distance_transformed = cv2.distanceTransform(binary_img, distanceType=cv2.DIST_L1, maskSize=5)
     cv2.imshow(name, bear_distance_transformed)
+    # cv2.imwrite("%s.jpg" % name, bear_distance_transformed)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    draw_skeleton(name, bear_image, cv2.ximgproc.THINNING_ZHANGSUEN, "ZHANGSUEN")
-    draw_skeleton(name, bear_image, cv2.ximgproc.THINNING_GUOHALL, "GUOHALL")
+    draw_skeleton(name, img_to_process, cv2.ximgproc.THINNING_ZHANGSUEN, "ZHANGSUEN")
+    draw_skeleton(name, img_to_process, cv2.ximgproc.THINNING_GUOHALL, "GUOHALL")
 
 
 if __name__ == "__main__":
     print("Reading the image")
     # bear_image = cv2.imread("junction.png", cv2.IMREAD_GRAYSCALE)
     # bear_image = cv2.imread("bear.pbm", cv2.IMREAD_GRAYSCALE)
-    process_image("car.bmp", "Car")
+    for img, name in [("bear.pbm", "Bear"), ("car.bmp", "Car"), ("star.bmp", "Star")]:
+        process_image(img, name)
