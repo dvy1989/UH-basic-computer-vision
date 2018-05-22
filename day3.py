@@ -5,11 +5,9 @@
 import gzip
 import pickle
 from os import path
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
-import numpy as np
 
 import cv2
+import numpy as np
 
 
 def get_initial_point(img, height, width):
@@ -128,17 +126,24 @@ COEFFS = [2 ** i for i in range(0, 8)]
 
 
 def calculate_hist(img):
-    hist = dict()
     height, width = img.shape
+    hist = list()
+    index = 0
     for i in range(1, height - 1):
         for j in range(1, width - 1):
-            sum = int(img[i - 1, j - 1] * COEFFS[0] + img[i - 1, j] * COEFFS[1] + img[i - 1, j + 1] * COEFFS[2] + img[
-                i, j + 1] * COEFFS[3] + img[i + 1, j + 1] * COEFFS[4] + img[i + 1, j] * COEFFS[5] + img[i + 1, j - 1] * \
-                  COEFFS[6] + img[i, j - 1] * COEFFS[7])
-            if sum in hist:
-                hist[sum] += 1
-            else:
-                hist[sum] = 1
+            feature = img[i - 1, j - 1] * COEFFS[0] \
+                      + img[i - 1, j] * COEFFS[1] \
+                      + img[i - 1, j + 1] * COEFFS[2] \
+                      + img[i, j + 1] * COEFFS[3] \
+                      + img[i + 1, j + 1] * COEFFS[4] \
+                      + img[i + 1, j] * COEFFS[5] \
+                      + img[i + 1, j - 1] * COEFFS[6] \
+                      + img[i, j - 1] * COEFFS[7]
+            # if feature in hist:
+            #     hist[feature] += 1
+            # else:
+            #     hist[feature] = 1
+            hist.append(feature)
     return hist
 
 
@@ -149,27 +154,55 @@ def homework():
     valid_x, valid_y = valid_set
     test_x, test_y = test_set
 
-    features = list()
+    print train_y[0:10], valid_y[0:10], test_y[0:10]
 
-    for picture in train_x[0:1000]:
+    features = list()
+    # features = np.array(dtype=np.float32)
+
+    for index, picture in enumerate(train_x[0:1000]):
         img = picture.reshape(28, 28)
-        print cv2.calcHist(cv2.cvtColor(img, cv2.COLOR_GRAY2RGB), channels=[0,1,2], maks=)
-        cv2.imshow("Pict", img)
-        cv2.waitKey(5) & 0xFF
+        # print img
+        ret, img = cv2.threshold(img * 255, 100, 255, cv2.THRESH_BINARY)
+        # print cv2.calcHist(cv2.cvtColor(img, cv2.COLOR_GRAY2RGB), channels=[0,1,2], maks=)
         features.append(calculate_hist(img))
+        # cv2.imshow("Original", img * 255)
+        # cv2.waitKey(300) & 0xFF
+        # print hist
+        # cv2.imshow("LBP", hist)
+        # cv2.waitKey(300) & 0xFF
+        # features[index] = np.reshape(hist, -1)
 
     test_features = list()
 
-    for picture in test_x[0:2000]:
+    for index, picture in enumerate(test_x[0:2000]):
         img = picture.reshape(28, 28)
+        ret, img = cv2.threshold(img * 255, 100, 255, cv2.THRESH_BINARY)
         # cv2.imshow("Pict", img)
         # cv2.waitKey(5) & 0xFF
+        # test_features[index] = np.reshape(calculate_hist(img), -1)
         test_features.append(calculate_hist(img))
 
-    print(features[0])
+    # print(features[0])
 
-    knn = cv2.ml.KNearest_create();
-    knn.train(features, cv2.ml.ROW_SAMPLE, range(0, 1000))
+    features = np.array(features, dtype=np.float32)
+    print features.shape
+    test_features = np.array(test_features, dtype=np.float32)
+    print test_features.shape
+
+    knn = cv2.ml.KNearest_create()
+    knn.train(features, cv2.ml.ROW_SAMPLE, np.arange(0, 1000))
+
+    for test_feature in test_features:
+        # print test_feature.shape
+        # print test_feature.reshape(676,1).shape, features[0].shape
+        ret, results, neighbours, dist = knn.findNearest(test_feature.reshape((1, 676)), 1)
+        print results[0]
+
+    cv2.imshow("Train", train_x[334].reshape(28, 28))
+    cv2.imshow("Test", train_x[1999].reshape(28, 28))
+
+    cv2.waitKey(0)
+
     cv2.destroyAllWindows()
 
 
